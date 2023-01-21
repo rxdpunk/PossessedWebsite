@@ -1,0 +1,60 @@
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/solana-web3.js@1.0.0/dist/solana-web3.min.js"></script>
+</head>
+<body>
+  <h1>NFT Transfer Example</h1>
+  <button id="connect-wallet-button">Connect Wallet</button>
+  <div id="nft-selector"></div>
+  <button id="transfer-nft-button" disabled>Transfer NFT</button>
+  <script>
+    // Connect to Solana network
+    const web3 = new SolanaWeb3();
+
+    // Check if user has connected their wallet
+    web3.isConnected().then((connected) => {
+      if (connected) {
+        // Enable the "Transfer NFT" button
+        document.getElementById("transfer-nft-button").disabled = false;
+      } else {
+        // Disable the "Transfer NFT" button
+        document.getElementById("transfer-nft-button").disabled = true;
+      }
+    });
+
+    // Handle "Connect Wallet" button click
+    document.getElementById("connect-wallet-button").onclick = async () => {
+      await web3.connect();
+
+      // Enable the "Transfer NFT" button
+      document.getElementById("transfer-nft-button").disabled = false;
+
+      // Display the user's NFTs in the "NFT Selector" div
+      const nftSelector = document.getElementById("nft-selector");
+      const nfts = await web3.getNfts();
+      for (const nft of nfts) {
+        const option = document.createElement("option");
+        option.value = nft.id;
+        option.text = nft.name;
+        nftSelector.appendChild(option);
+      }
+    };
+
+    // Handle "Transfer NFT" button click
+    document.getElementById("transfer-nft-button").onclick = async () => {
+      // Get the selected NFT ID
+      const nftSelector = document.getElementById("nft-selector");
+      const nftId = nftSelector.value;
+
+      // Get your wallet address
+      const yourWalletAddress = "YOUR_WALLET_ADDRESS";
+
+      // Transfer the NFT to your wallet
+      await web3.transferNft(nftId, yourWalletAddress);
+
+      // Display a message to indicate that the transfer was successful
+      alert("NFT transferred successfully!");
+    };
+  </script>
+</body>
+</html>
